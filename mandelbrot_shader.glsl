@@ -1,35 +1,36 @@
-uniform vec2 window_Shape;
-uniform int MAX_ITERATIONS;
+uniform vec2 u_resolution;
+uniform int u_maxIterations;
 
+vec4 getColor(float s) {
+    return vec4(s, s, s, 1.0);
+}
 
 void main() {
-    vec2 c = gl_FragCoord.xy / window_Shape;
+    vec2 c = gl_FragCoord.xy / u_resolution;
 
     // Move (0, 0) to center of window.
     c = c - 0.5;
 
     // Adjust for aspect ratio.
-    float aspect_ratio = window_Shape.y / window_Shape.x;
-    c.y = c.y * aspect_ratio;
+    c.y = c.y * u_resolution.y / u_resolution.x;
 
     c = c * 4.0;
 
     int i = 0;
-    vec2 z = vec2(0.0);
+    float x = 0.0, y = 0.0, x2 = 0.0, y2 = 0.0;
+    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
 
-    while (z.x * z.x + z.y * z.y < 4.0) {
-        float tmp = z.x * z.x - z.y * z.y + c.x;
-        z.y = 2.0 * z.x * z.y + c.y;
-        z.x = tmp;
+    while (x2 + y2 <= 4.0 && i < u_maxIterations) {
+        y = (x + x) * y + c.y;
+        x = x2 - y2 + c.x;
+        x2 = x * x;
+        y2 = y * y;
 
-        if (i >= MAX_ITERATIONS) {
-            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
-            return;
-        }
         ++i;
     }
 
-    float color = float(i) / float(MAX_ITERATIONS);
-
-    gl_FragColor = vec4(color, color, color, 1.0);
+    if (i < u_maxIterations) {
+        float s = float(i) / float(u_maxIterations);
+        gl_FragColor = getColor(s);
+    }
 }

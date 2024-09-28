@@ -5,7 +5,7 @@
 #define HEIGHT 720u
 
 #define SHADERNAME "mandelbrot_shader.glsl"
-#define MAX_ITERATIONS 1024
+#define MAX_ITERATIONS 256
 
 int main() {
     // Check that shaders are available on this device.
@@ -27,18 +27,10 @@ int main() {
     };
     window.setFramerateLimit(60);
 
-    shader.setUniform("window_Shape", sf::Glsl::Vec2{window.getSize()});
-    shader.setUniform("MAX_ITERATIONS", MAX_ITERATIONS);
+    shader.setUniform("u_resolution", sf::Glsl::Vec2{window.getSize()});
+    shader.setUniform("u_maxIterations", MAX_ITERATIONS);
 
     auto screen = sf::RectangleShape{sf::Vector2f{window.getSize()}};
-
-    sf::RenderTexture tex;
-    tex.create(WIDTH, HEIGHT);
-    tex.draw(screen, &shader);
-    tex.display();
-
-    sf::Sprite background(tex.getTexture());
-
 
     while(window.isOpen()) {
         for (sf::Event event; window.pollEvent(event);) {
@@ -47,7 +39,7 @@ int main() {
         }
 
         window.clear(sf::Color::Black);
-        window.draw(background);
+        window.draw(screen, &shader);
         window.display();
     }
 
