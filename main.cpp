@@ -1,78 +1,75 @@
-#include <iostream>
-#include <thread>
+#include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
+#include <stdio.h>
+#include <iostream>
+#include <math.h>
 
-#define SHADER_FILE "mandelbrot_shader.glsl"
+#define ShaderFile "mandelbrot.frag"
 
-unsigned int windowWidth = 1280u;
-unsigned int windowHeight = 720u;
+unsigned int width = 1280;
+unsigned int height = 720;
 
-unsigned int maxIterations = 128u;
+unsigned int maxIterations = 512;
 
-void updateRender(sf::RenderWindow *window, sf::Shader *shader, sf::Vector2f center, float zoom)
-{
-    sf::Vector2u size = window->getSize();
+int main() {
 
-    shader->setUniform("u_resolution", sf::Vector2f{size});
-    shader->setUniform("u_maxIterations", (int)maxIterations);
-
-    shader->setUniform("u_center", center);
-    shader->setUniform("u_zoom", zoom);
-
-    if (window->isOpen())
-    {
-        window->clear();
-
-        sf::RectangleShape rect{sf::Vector2f{size}};
-
-        sf::RenderTexture texture;
-        texture.create(size.x, size.y);
-        texture.draw(rect, shader);
-        texture.display();
-
-        sf::Sprite image{texture.getTexture()};
-
-        window->draw(image);
-        window->display();
-    }
-}
-
-int main()
-{
-    // Check that shaders are available on this device
-    if (!sf::Shader::isAvailable())
-    {
-        std::cout << "error: shaders are not available on this device." << std::endl;
-        exit(1);
+    if (!sf::Shader::isAvailable()) {
+        std::cout << "error: Shaders are not available." << std::endl;
     }
 
     sf::Shader shader;
-    // Check that sfml was able to load the shader file
-    if (!shader.loadFromFile(SHADER_FILE, sf::Shader::Fragment))
-    {
-        std::cout << "error: " << SHADER_FILE << " was not found." << std::endl;
-        exit(1);
+
+    if (!shader.loadFromFile(ShaderFile, sf::Shader::Fragment)) {
+        std::cout << "error: No shader " << ShaderFile << std::endl; 
     }
 
-    sf::RenderWindow window{sf::VideoMode(windowWidth, windowHeight), "Mandelbrot Set"};
-    window.setFramerateLimit(60);
+    sf::ContextSettings settings(24);
+    settings.sRgbCapable = true;
+    sf::RenderWindow window(sf::VideoMode(width, height), "Mandelbrot Set", sf::Style::Default, settings);
 
-    sf::Vector2f center{0.0, 0.0};
-    float zoom = 1.0;
+    sf::RectangleShape rect(sf::Vector2f(width, height));
 
-    updateRender(&window, &shader, center, zoom);
+    sf::RenderTexture text;
+    text.create(width, height);
 
-    // Run the program while the window is open
-    while (window.isOpen())
-    {
+    shader.setUniform("u_resolution", sf::Vector2f(width, height));
+    shader.setUniform("u_maxIterations", (int)maxIterations);
+
+    text.draw(rect, &shader);
+    text.display();
+
+    sf::Sprite sprite(text.getTexture());
+
+    float x = 0, y = 0, z = 1;
+    x = -0.761574;
+    y = -0.0847596;
+
+    sf::Clock clock;
+
+    while (window.isOpen()) {
         sf::Event event;
-        while (window.pollEvent(event))
-        {
-            // Close the window when requested
-            if (event.type == sf::Event::Closed)
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
                 window.close();
+            }
         }
+
+        float time = clock.getElapsedTime().asSeconds();
+
+        z = 1 / exp(((time / 12) - floor(time / 12)) * 12);
+
+        shader.setUniform("u_center", sf::Vector2f(x, y));
+        shader.setUniform("u_zoom", z);
+
+        text.draw(rect, &shader);
+        text.display();
+
+        sprite.setTexture(text.getTexture());
+
+        window.draw(sprite);
+        window.display();
     }
 
     return 0;
 }
+
