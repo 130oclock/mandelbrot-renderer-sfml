@@ -1,16 +1,16 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
-#include <stdio.h>
-#include <iostream>
 #include <math.h>
+#include <iostream>
+#include <iomanip>
 
 #define ShaderFile "mandelbrot.frag"
-#define zoomRate 0.025
+#define zoomRate 0.5
 
 unsigned int width = 1280;
 unsigned int height = 720;
 
-unsigned int maxIterations = 1024;
+unsigned int maxIterations = 512;
 
 int main()
 {
@@ -28,19 +28,22 @@ int main()
     }
 
     sf::ContextSettings settings(24);
-    settings.sRgbCapable = true;
+    // settings.sRgbCapable = true;
     sf::RenderWindow window(sf::VideoMode(width, height), "Mandelbrot Set", sf::Style::Default, settings);
+    window.setFramerateLimit(60);
 
     sf::RectangleShape rect(sf::Vector2f(width, height));
 
     shader.setUniform("u_resolution", sf::Vector2f(width, height));
     shader.setUniform("u_maxIterations", (int)maxIterations);
 
-    float x = 0, y = 0, z = 1;
-    x = -0.7615740;
-    y = -0.0847596;
-    //x = -0.74364085;
-    //y = 0.13182733;
+    float x = 0, y = 0, z = -0.118;
+
+    shader.setUniform("u_center", sf::Vector2f(x, y));
+    shader.setUniform("u_zoom", 1 / exp(z));
+
+    window.draw(rect, &shader);
+    window.display();
 
     sf::Clock clock;
 
@@ -55,14 +58,43 @@ int main()
             }
         }
 
-        float time = clock.getElapsedTime().asSeconds();
-        z = time * 0.5;
+        float elapsed = clock.restart().asSeconds();
 
-        shader.setUniform("u_center", sf::Vector2f(x, y));
-        shader.setUniform("u_zoom", 1 / exp(z));
+        bool update = false;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+        {
+            z += elapsed * zoomRate;
+            update = true;
+        }
 
-        window.draw(rect, &shader);
-        window.display();
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+        {
+            z -= elapsed * zoomRate;
+            update = true;
+        }
+
+        float zoom = 1 / exp(z);
+
+        if (update)
+        {
+            sf::Vector2 localPosition = sf::Mouse::getPosition(window);
+            float mx = zoom * (float(localPosition.x << 1) - width) / height;
+            float my = zoom * -(float(localPosition.y << 1) - height) / height;
+
+            x += elapsed * mx;
+            y += elapsed * my;
+
+            char str[1024];
+            sprintf(str, "Mandelbrot Set : (%f, %f)", x, y);
+
+            window.setTitle(str);
+
+            shader.setUniform("u_center", sf::Vector2f(x, y));
+            shader.setUniform("u_zoom", zoom);
+
+            window.draw(rect, &shader);
+            window.display();
+        }
     }
 
     return 0;
