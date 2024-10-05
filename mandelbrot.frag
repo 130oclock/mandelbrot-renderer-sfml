@@ -1,10 +1,22 @@
+#define samples 3
+#define log2 3.32192809489
+#define dbail 0.000001
+
 uniform vec2 u_resolution;
 uniform int u_maxIterations;
-
 uniform vec2 u_center;
 uniform float u_zoom;
 
-float log_2 = 0.30102999566;
+// Utility functions
+float rand(vec2 co){
+    return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
+float rseed = 0.0;
+vec2 rand2() {
+    vec2 seed = vec2(rseed++);
+    return vec2(rand(seed + 0.342), rand(seed + 0.756));
+}
 
 vec3 hsv2rgb(vec3 c) {
     vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
@@ -12,53 +24,53 @@ vec3 hsv2rgb(vec3 c) {
     return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
-vec3 getColor(float i) {
-    float f = float(i) / float(u_maxIterations);
-
-    float h = mod(pow(f * 360.0, 1.5), 360.0) / 360.0;
-    float s = 1.0;
-    float v = f;
-
-    return hsv2rgb(vec3(h, s, v));
+vec3 palette(float t, vec3 a, vec3 b, vec3 c, vec3 d ) {
+    return a + b*cos(6.28318*(c*t+d));
 }
 
-float getMandelbrot(vec2 c) {
+// Mandelbrot implementation
+vec3 getColor(float i) {
+    vec3 color;
+
+    float f = i / float(u_maxIterations);
+
+    //color = hsv2rgb(vec3(mod(pow(f * 360.0, 1.5), 360.0) / 360.0, 1.0, f));
+    color = palette(cos(31.415 * f), vec3(0.5), vec3(0.5), vec3(1.0), vec3(0.0, 0.1, 0.2));
+
+    return color;
+}
+
+float getMandelbrotPoint(vec2 c) {
     int i;
     float x = 0.0, y = 0.0, x2 = 0.0, y2 = 0.0;
 
     for (i = 0; x2 + y2 <= 4.0 && i < u_maxIterations; ++i) {
-        y = (x + x) * y + c.y;
-        x = x2 - y2 + c.x;
+        y = c.y + (x + x) * y;
+        x = c.x + x2 - y2;
         x2 = x * x;
         y2 = y * y;
     }
 
     if (i < u_maxIterations) {
         float log_zn = log(x2 + y2) * 0.5;
-        float nu = log(log_zn / log_2) / log_2;
+        float nu = log(log_zn * log2) * log2;
 
-        return 1.0 + float(i) - nu;
+        return float(i) + 1.0 - nu;
     }
 
     return float(i);
 }
 
 void main() {
-    vec2 uv = gl_FragCoord.xy / u_resolution;
+    vec3 color = vec3(0.0);
 
-    // Move (0, 0) to center of window
-    uv -= 0.5;
+    for (int sample = 0; sample < samples; ++sample) {
+        vec2 uv = u_zoom * (2.0 * gl_FragCoord.xy + rand2() - u_resolution) / u_resolution.y + u_center;
+        float i = getMandelbrotPoint(uv);
 
-    // Adjust for aspect ratio
-    uv.y = uv.y * (u_resolution.y / u_resolution.x);
-    // Scale to fit the screen
-    uv = uv * 4.0 * u_zoom;
-    uv += u_center;
+        if (int(i) < u_maxIterations)
+            color += getColor(i);
+    }
 
-    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
-
-    float i = getMandelbrot(uv);
-
-    if (int(i) < u_maxIterations)
-        gl_FragColor = vec4(getColor(i).xyz, 1.0);
+    gl_FragColor = vec4(color.xyz / float(samples), 1.0);
 }
