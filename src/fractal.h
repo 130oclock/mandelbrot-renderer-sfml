@@ -1,5 +1,5 @@
-#ifndef FRACTAL_HPP
-#define FRACTAL_HPP
+#ifndef FRACTAL_H
+#define FRACTAL_H
 
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>

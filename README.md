@@ -1,13 +1,18 @@
-# Mandelbrot Set Renderer in C++
+# Mandelbrot Set Renderer
+
+<p align="center">
+    <img src="docs/images/Mandelbrot_set_window.png?raw=true" alt="The Mandelbrot Set drawn in a window." width="70%"/>
+</p>
+
+* [Description](#description)
+* [Requirements](#requirements)
+* [Building](#building)
+* [Execution](#execution)
 
 ## Description
 
 This project is a Mandelbrot set rendering program written in C++. The window is created and rendered using
 the SFML library and GLSL.
-
-<p align="center">
-    <img src="docs/images/Mandelbrot_set_window.png?raw=true" alt="The Mandelbrot Set drawn in a window." width="70%"/>
-</p>
 
 ## Requirements
 
@@ -25,12 +30,14 @@ Example:
 ```bash
 mkdir build
 cd build
-cmake ../
+cmake ..
 make main
 ./bin/main
 ```
 
 ## Execution
 
-If your device supports shaders in SFML, running the program using `./bin/main` should open a window titled "Mandelbrot Set".
-It should display the entire Mandelbrot set. Using the up and down arrow keys will zoom in and out towards the mouse cursor respectively.
+Running the program should open a window titled "Mandelbrot Set" which displays the entire Mandelbrot set.
+Using the up and down arrow keys will zoom in or out towards your mouse cursor.
+
+If your device does not support shaders, it will exit without opening a window.

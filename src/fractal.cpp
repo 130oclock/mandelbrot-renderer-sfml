@@ -12,7 +12,7 @@ float zoomFunc(float zoom)
 }
 
 Fractal::Fractal(std::string shaderPath, unsigned int widthIn, unsigned int heightIn, unsigned int maxIterationsIn)
-    : width{widthIn}, height{heightIn}, maxIterations{maxIterationsIn}, x{0}, y{0}, z{-0.118}, zoomRate{0.25}
+    : width{widthIn}, height{heightIn}, maxIterations{maxIterationsIn}, x{0}, y{0}, z{-0.118}, zoomRate{0.375}
 {
     if (!shader.loadFromFile(shaderPath, sf::Shader::Fragment))
     {
