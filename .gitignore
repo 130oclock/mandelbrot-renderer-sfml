@@ -1,1 +1,9 @@
+build
+out
+.cache
+.idea
+.vs
+.vscode
+
+main.cpp
 *.o

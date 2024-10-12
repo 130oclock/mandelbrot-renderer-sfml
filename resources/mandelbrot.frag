@@ -66,6 +66,9 @@ void main() {
 
     for (int sample = 0; sample < samples; ++sample) {
         vec2 uv = u_zoom * (2.0 * gl_FragCoord.xy + rand2() - u_resolution) / u_resolution.y + u_center;
+
+        uv = vec2(uv.x, -uv.y);
+
         float i = iterate(uv);
 
         if (int(i) < u_maxIterations)
