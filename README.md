@@ -6,7 +6,7 @@ This project is a Mandelbrot set rendering program written in C++. The window is
 the SFML library and GLSL.
 
 <p align="center">
-    <img src="docs/images/Mandelbrot_set_window.png?raw=true" alt="The Mandelbrot Set drawn in a window." width="45%"/>
+    <img src="docs/images/Mandelbrot_set_window.png?raw=true" alt="The Mandelbrot Set drawn in a window." width="70%"/>
 </p>
 
 ## Requirements
