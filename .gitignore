@@ -5,6 +5,6 @@ out
 .vs
 .vscode
 
-main.cpp
+temp.cpp
 *.o
 .markdownlint.json

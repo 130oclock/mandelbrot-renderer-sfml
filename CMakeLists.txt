@@ -17,11 +17,11 @@ FetchContent_Declare(SFML
 FetchContent_MakeAvailable(SFML)
 
 configure_file(
-    ${CMAKE_SOURCE_DIR}/src/main.cpp.in
     ${CMAKE_SOURCE_DIR}/src/main.cpp
+    ${CMAKE_SOURCE_DIR}/src/temp.cpp
 )
 
-add_executable(main src/main.cpp)
+add_executable(main src/temp.cpp)
 target_link_libraries(main PRIVATE sfml-graphics sfml-window sfml-system)
 target_compile_features(main PRIVATE cxx_std_17)
 
