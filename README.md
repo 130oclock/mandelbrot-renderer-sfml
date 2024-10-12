@@ -2,10 +2,7 @@
 
 <p align="center">
     <img src="docs/images/Mandelbrot_set_window.png?raw=true" alt="The Mandelbrot Set drawn in a window." width="70%"/><br>
-    <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License MIT">
-    <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/130oclock/mandelbrot-renderer-sfml">
-    <img alt="Language C++" src="https://img.shields.io/badge/language-C%2B%2B-blue">
-    <img alt="SFML" src="https://img.shields.io/badge/SFML-8CC841">
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License MIT"></a>
 </p>
 
 * [Description](#description)
