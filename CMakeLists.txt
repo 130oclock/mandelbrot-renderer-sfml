@@ -21,10 +21,10 @@ configure_file(
     ${CMAKE_SOURCE_DIR}/app/main.cpp
 )
 
-file(GLOB SOURCES src/*.h src/*.cpp)
+file(GLOB SOURCES include/*.h src/*.cpp)
 
 add_executable(main app/main.cpp ${SOURCES})
-target_include_directories(main PRIVATE src/)
+target_include_directories(main PRIVATE include/ src/)
 target_link_libraries(main PRIVATE sfml-graphics sfml-window sfml-system)
 target_compile_features(main PRIVATE cxx_std_17)
 
