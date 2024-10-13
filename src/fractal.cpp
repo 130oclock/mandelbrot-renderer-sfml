@@ -1,8 +1,9 @@
-#include <SFML/Window.hpp>
-#include <SFML/Graphics.hpp>
 #include <math.h>
 #include <iostream>
 #include <string>
+
+#include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
 
 #include "fractal.h"
 
@@ -11,8 +12,8 @@ float zoomFunc(float zoom)
     return 1 / exp(zoom);
 }
 
-Fractal::Fractal(std::string shaderPath, unsigned int widthIn, unsigned int heightIn, unsigned int maxIterationsIn)
-    : width{widthIn}, height{heightIn}, maxIterations{maxIterationsIn}, x{0}, y{0}, z{-0.118}, zoomRate{0.375}
+Fractal::Fractal(std::string shaderPath, unsigned int width, unsigned int height, unsigned int maxIterations)
+    : width{width}, height{height}, maxIterations{maxIterations}, x{0}, y{0}, z{-0.694}, zoomRate{0.375}
 {
     if (!shader.loadFromFile(shaderPath, sf::Shader::Fragment))
     {
@@ -41,8 +42,8 @@ void Fractal::zoom(float elapsedTime)
 
 void Fractal::move(sf::Vector2i mousePosition, float elapsedTime)
 {
-    float mx = zoomFunc(z) * (float(mousePosition.x << 1) - width) / height;
-    float my = zoomFunc(z) * -(float(mousePosition.y << 1) - height) / height;
+    float mx = zoomFunc(z) * (float(mousePosition.x << 1) - width) / width;
+    float my = zoomFunc(z) * -(float(mousePosition.y << 1) - height) / width;
 
     x += elapsedTime * mx;
     y += elapsedTime * my;

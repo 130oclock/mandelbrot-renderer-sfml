@@ -1,9 +1,10 @@
 #ifndef FRACTAL_H
 #define FRACTAL_H
 
+#include <string>
+
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
-#include <string>
 
 float zoomFunc(float zoom);
 
@@ -15,7 +16,7 @@ private:
     sf::Shader shader;
 
 public:
-    Fractal(std::string shaderPath, unsigned int widthIn, unsigned int heightIn, unsigned int maxIterationsIn);
+    Fractal(std::string shaderPath, unsigned int width, unsigned int height, unsigned int maxIterations);
 
     void draw(sf::RenderWindow &window);
 

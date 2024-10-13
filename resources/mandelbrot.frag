@@ -65,7 +65,7 @@ void main() {
     vec3 color = vec3(0.0);
 
     for (int sample = 0; sample < samples; ++sample) {
-        vec2 uv = u_zoom * (2.0 * gl_FragCoord.xy + rand2() - u_resolution) / u_resolution.y + u_center;
+        vec2 uv = u_zoom * (2.0 * gl_FragCoord.xy + rand2() - u_resolution) / u_resolution.x + u_center;
 
         uv = vec2(uv.x, -uv.y);
 
