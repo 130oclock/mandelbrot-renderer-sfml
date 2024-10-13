@@ -34,7 +34,7 @@ int main()
     std::string shaderPath = "${CMAKE_SOURCE_DIR}/resources/mandelbrot.frag";
     Fractal mandelbrot{shaderPath, windowWidth, windowHeight, maxIterations};
 
-    // Draw the cover
+    // Draw the cover image.
     mandelbrot.update();
     window.draw(mandelbrot);
     window.display();
