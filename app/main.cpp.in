@@ -1,15 +1,13 @@
-#include <SFML/Window.hpp>
-#include <SFML/Graphics.hpp>
 #include <math.h>
 #include <iostream>
 #include <string>
 
+#include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
+
 #include "fractal.h"
 
-unsigned int windowWidth = 1280;
-unsigned int windowHeight = 720;
-
-unsigned int maxIterations = 512;
+const unsigned int maxIterations = 512;
 
 int main()
 {
@@ -20,22 +18,31 @@ int main()
         exit(1);
     }
 
+    // unsigned int windowWidth = sf::VideoMode::getDesktopMode().width;
+    // unsigned int windowHeight = sf::VideoMode::getDesktopMode().height;
+    unsigned int windowWidth = 1280;
+    unsigned int windowHeight = 720;
+
     sf::ContextSettings settings(24);
-    // settings.sRgbCapable = true;
 
     sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Mandelbrot Set", sf::Style::Default, settings);
     window.setFramerateLimit(60);
 
     sf::Clock clock;
 
+    // Create a fractal renderer using the Mandelbrot fragment shader.
     std::string shaderPath = "${CMAKE_SOURCE_DIR}/resources/mandelbrot.frag";
     Fractal mandelbrot{shaderPath, windowWidth, windowHeight, maxIterations};
 
-    mandelbrot.draw(window);
+    // Draw the cover
+    mandelbrot.update();
+    window.draw(mandelbrot);
     window.display();
 
     while (window.isOpen())
     {
+        bool update = false;
+
         sf::Event event;
         while (window.pollEvent(event))
         {
@@ -43,32 +50,42 @@ int main()
             {
                 window.close();
             }
+
+            if (event.type == sf::Event::Resized)
+            {
+                // Update the view to the new size of the window
+                windowWidth = event.size.width;
+                windowHeight = event.size.height;
+                sf::FloatRect visibleArea(0.f, 0.f, windowWidth, windowHeight);
+                window.setView(sf::View(visibleArea));
+
+                update = true;
+
+                mandelbrot.setResolution(windowWidth, windowHeight);
+            }
         }
 
         float elapsedTime = clock.restart().asSeconds();
 
-        bool update = false;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) ||
+            sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
         {
-            mandelbrot.zoom(elapsedTime);
             update = true;
-        }
+            mandelbrot.move(sf::Mouse::getPosition(window), elapsedTime);
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-        {
-            mandelbrot.zoom(-elapsedTime);
-            update = true;
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+                mandelbrot.zoom(elapsedTime);
+            else
+                mandelbrot.zoom(-elapsedTime);
         }
 
         if (update)
         {
-
-            mandelbrot.move(sf::Mouse::getPosition(window), elapsedTime);
-
             // Clear the screen.
             window.clear(sf::Color::Black);
 
-            mandelbrot.draw(window);
+            mandelbrot.update();
+            window.draw(mandelbrot);
 
             window.display();
         }

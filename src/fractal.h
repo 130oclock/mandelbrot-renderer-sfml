@@ -6,19 +6,23 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 
-float zoomFunc(float zoom);
-
-class Fractal
+class Fractal : public sf::Drawable
 {
 private:
     unsigned int width, height, maxIterations;
     float x, y, z, zoomRate;
     sf::Shader shader;
+    sf::RectangleShape shape;
 
 public:
-    Fractal(std::string shaderPath, unsigned int width, unsigned int height, unsigned int maxIterations);
+    Fractal(
+        std::string shaderPath,
+        unsigned int width,
+        unsigned int height,
+        unsigned int maxIterations);
 
-    void draw(sf::RenderWindow &window);
+    void update();
+    void draw(sf::RenderTarget &target, sf::RenderStates states) const;
 
     void zoom(float elapsedTime);
     void move(sf::Vector2i mousePosition, float elapsedTime);
